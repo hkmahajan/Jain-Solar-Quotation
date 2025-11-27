@@ -61,8 +61,8 @@ const Header = ({ formData, showAddress = true }) => (
         
         {showAddress && (
           <div className="mt-2 text-[10px] text-gray-600 space-y-0.5">
-            <p className="flex items-center gap-1"><MapPin size={10}/> Solapur, Maharashtra, India</p>
-            <p className="flex items-center gap-1"><Phone size={10}/> +91 98765 43210 <span className="text-gray-300 mx-1">|</span> <Mail size={10}/> sales@jainmultiservice.com</p>
+            <p className="flex items-center gap-1"><MapPin size={10}/> Shop No. 6, Ganesh Society in Front of Bus stand, Lonar</p>
+            <p className="flex items-center gap-1"><Phone size={10}/> +91 99600 69017 <span className="text-gray-300 mx-1">|</span> <Mail size={10}/>jainmultiservices1@gmail.com</p>
           </div>
         )}
       </div>
@@ -115,7 +115,7 @@ const EditForm = ({ formData, handleChange, financials, setMode }) => (
           name="category" 
           value={formData.category}
           onChange={handleChange}
-          options={['Residential', 'Commercial', 'Industrial', 'Institutional']} 
+          options={['Residential', 'Commercial']} 
           width="w-1/3"
         />
         <InputField 
@@ -131,7 +131,7 @@ const EditForm = ({ formData, handleChange, financials, setMode }) => (
           name="structureHeight" 
           value={formData.structureHeight}
           onChange={handleChange}
-          options={['Standard (Low Height)', 'Elevated (High Rise)', 'Tin Shed Flush Mount']} 
+          options={['Standard (Low Height)', 'Elevated (High Rise)', 'Tin Shed Flush Mount', '3000mm Ground Clearance (With Walkway)']} 
           width="flex-1"
         />
       </div>
@@ -225,6 +225,89 @@ const EditForm = ({ formData, handleChange, financials, setMode }) => (
         <div className="flex justify-between text-xl font-bold text-blue-800 mt-2 pt-2 border-t">
           <span>Net Payable:</span>
           <span>₹ {financials.finalAmount.toLocaleString('en-IN')}</span>
+        </div>
+      </div>
+    </div>
+
+    {/* Section 4: Bank Details */}
+    <div className="mb-6 border-2 border-blue-200 rounded-lg p-6 bg-gradient-to-br from-blue-50 to-white">
+      <h3 className="text-xl font-bold mb-6 text-blue-900 uppercase tracking-wide border-b-2 border-blue-300 pb-2">
+        Bank Account Details
+      </h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Account Name</label>
+          <input
+            type="text"
+            name="bankAccountName"
+            value={formData.bankAccountName}
+            onChange={handleChange}
+            placeholder="Account Holder Name"
+            className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Bank Name</label>
+          <input
+            type="text"
+            name="bankName"
+            value={formData.bankName}
+            onChange={handleChange}
+            placeholder="Bank Name"
+            className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Account Number</label>
+          <input
+            type="text"
+            name="bankAccountNumber"
+            value={formData.bankAccountNumber}
+            onChange={handleChange}
+            placeholder="1234567890123456"
+            className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-mono tracking-wider"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">IFSC Code</label>
+          <input
+            type="text"
+            name="bankIfscCode"
+            value={formData.bankIfscCode}
+            onChange={handleChange}
+            placeholder="SBIN0001234"
+            className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-mono uppercase tracking-wider"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Branch</label>
+          <input
+            type="text"
+            name="bankBranch"
+            value={formData.bankBranch}
+            onChange={handleChange}
+            placeholder="Branch Name"
+            className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Account Type</label>
+          <select
+            name="bankAccountType"
+            value={formData.bankAccountType}
+            onChange={handleChange}
+            className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white"
+          >
+            <option value="Current Account">Current Account</option>
+            <option value="Savings Account">Savings Account</option>
+            <option value="Business Account">Business Account</option>
+          </select>
         </div>
       </div>
     </div>
@@ -328,6 +411,37 @@ const PrintableQuote = ({ formData, financials, handlePrint, handleDownloadPdf, 
           </div>
         </div>
 
+        {/* Bank Details Section - Styled Card */}
+        <div className="mb-5 border-2 border-blue-300 bg-gradient-to-br from-blue-50 to-white p-4 rounded-lg">
+          <h3 className="text-xs font-bold uppercase tracking-wider mb-3 text-blue-900 border-b-2 border-blue-400 pb-2">Bank Details for Payment</h3>
+          <div className="grid grid-cols-2 gap-x-6 gap-y-2.5 text-[10px]">
+            <div className="bg-white p-2 rounded border border-blue-200">
+              <span className="text-gray-500 block mb-1 font-semibold">Account Name:</span>
+              <span className="font-bold text-gray-800">{formData.bankAccountName || 'Not Provided'}</span>
+            </div>
+            <div className="bg-white p-2 rounded border border-blue-200">
+              <span className="text-gray-500 block mb-1 font-semibold">Bank Name:</span>
+              <span className="font-bold text-gray-800">{formData.bankName || 'Not Provided'}</span>
+            </div>
+            <div className="bg-white p-2 rounded border border-blue-200">
+              <span className="text-gray-500 block mb-1 font-semibold">Account Number:</span>
+              <span className="font-bold text-gray-800 font-mono">{formData.bankAccountNumber || 'XXXX-XXXX-XXXX'}</span>
+            </div>
+            <div className="bg-white p-2 rounded border border-blue-200">
+              <span className="text-gray-500 block mb-1 font-semibold">IFSC Code:</span>
+              <span className="font-bold text-gray-800 font-mono uppercase">{formData.bankIfscCode || 'XXXX0000000'}</span>
+            </div>
+            <div className="bg-white p-2 rounded border border-blue-200">
+              <span className="text-gray-500 block mb-1 font-semibold">Branch:</span>
+              <span className="font-bold text-gray-800">{formData.bankBranch || 'Not Provided'}</span>
+            </div>
+            <div className="bg-white p-2 rounded border border-blue-200">
+              <span className="text-gray-500 block mb-1 font-semibold">Account Type:</span>
+              <span className="font-bold text-gray-800">{formData.bankAccountType || 'Current Account'}</span>
+            </div>
+          </div>
+        </div>
+
         {/* Footer Page 1 */}
         <div className="absolute bottom-8 left-0 w-full text-center text-[10px] text-gray-400 font-medium">
           Page 1 of 3
@@ -381,7 +495,7 @@ const PrintableQuote = ({ formData, financials, handlePrint, handleDownloadPdf, 
             </tr>
             <tr className="even:bg-gray-50">
               <td className="p-2 border font-semibold text-gray-700 text-[11px]">AC Cables</td>
-              <td className="p-2 border text-gray-600 text-[11px]">Polycab / Havells (Copper Armored)</td>
+              <td className="p-2 border text-gray-600 text-[11px]">Polycab / Havells / Greatwhite (Copper Armored)</td>
               <td className="p-2 border text-right font-medium text-gray-800 text-[11px]">Approx 20m</td>
             </tr>
             <tr className="even:bg-gray-50">
@@ -434,7 +548,7 @@ const PrintableQuote = ({ formData, financials, handlePrint, handleDownloadPdf, 
       <div className="quote-page bg-white shadow-2xl print:shadow-none relative">
         <Header formData={formData} showAddress={false} />
         
-        <h3 className="text-base font-bold text-blue-900 mb-4 border-l-4 border-orange-500 pl-3 bg-gray-50 py-1.5">Commercial Proposal</h3>
+        <h3 className="text-base font-bold text-blue-900 mb-4 border-l-4 border-orange-500 pl-3 bg-gray-50 py-1.5">{formData.category} Proposal</h3>
 
         {/* Price Table */}
         <div className="mb-5 bg-white rounded-lg border border-gray-300 overflow-hidden">
@@ -482,8 +596,8 @@ const PrintableQuote = ({ formData, financials, handlePrint, handleDownloadPdf, 
           <div className="border border-gray-200 p-3 rounded-lg bg-gray-50">
             <h4 className="font-bold text-xs text-gray-800 mb-2 flex items-center border-b pb-1.5"><PenTool className="w-3 h-3 mr-1.5 text-orange-500"/> Payment Schedule</h4>
             <ul className="text-[10px] text-gray-600 space-y-2">
-              <li className="flex justify-between items-center"><span>Advance along with PO:</span> <span className="font-bold bg-white px-1.5 py-0.5 rounded border text-[10px]">50%</span></li>
-              <li className="flex justify-between items-center"><span>Against Material Delivery:</span> <span className="font-bold bg-white px-1.5 py-0.5 rounded border text-[10px]">40%</span></li>
+              <li className="flex justify-between items-center"><span>Advance along with PO:</span> <span className="font-bold bg-white px-1.5 py-0.5 rounded border text-[10px]">70%</span></li>
+              <li className="flex justify-between items-center"><span>After Material Delivery:</span> <span className="font-bold bg-white px-1.5 py-0.5 rounded border text-[10px]">20%</span></li>
               <li className="flex justify-between items-center"><span>After Installation:</span> <span className="font-bold bg-white px-1.5 py-0.5 rounded border text-[10px]">10%</span></li>
             </ul>
           </div>
@@ -492,8 +606,8 @@ const PrintableQuote = ({ formData, financials, handlePrint, handleDownloadPdf, 
             <h4 className="font-bold text-xs text-gray-800 mb-2 flex items-center border-b pb-1.5"><Shield className="w-3 h-3 mr-1.5 text-blue-500"/> Detailed Warranty</h4>
             <ul className="text-[10px] text-gray-600 space-y-1.5">
               <li><strong className="text-gray-800">Solar Panels:</strong> 10 Years Product Warranty, 25 Years Performance.</li>
-              <li><strong className="text-gray-800">Inverter:</strong> Standard 5 Years (Extendable).</li>
-              <li><strong className="text-gray-800">Installation:</strong> 1 Year free service maintenance.</li>
+              <li><strong className="text-gray-800">Inverter:</strong> Standard 10 Years (Extendable).</li>
+              <li><strong className="text-gray-800">Installation:</strong> 5 Years free service maintenance.</li>
             </ul>
           </div>
         </div>
@@ -517,10 +631,7 @@ const PrintableQuote = ({ formData, financials, handlePrint, handleDownloadPdf, 
             <p className="font-bold text-[10px] text-gray-600 uppercase tracking-wide">Customer Acceptance</p>
           </div>
           <div className="text-center w-1/3">
-            <div className="h-8 mb-1.5 flex items-end justify-center">
-              <span className="font-script text-xl text-blue-900 opacity-80" style={{fontFamily: 'cursive'}}>JainMS</span>
-            </div>
-            <div className="border-b border-gray-400 w-full mb-1.5"></div>
+            <div className="border-b border-gray-400 h-8 mb-1.5"></div>
             <p className="font-bold text-[10px] text-gray-600 uppercase tracking-wide">Authorized Signatory</p>
           </div>
         </div>
@@ -579,6 +690,14 @@ const App = () => {
     subsidyAmount: 78000, // Default PM Surya Ghar approx for 3kW
     includeGst: true,
     gstRate: 13.8, // Composite solar tax rate
+    
+    // Bank Details
+    bankAccountName: '',
+    bankName: '',
+    bankAccountNumber: '',
+    bankIfscCode: '',
+    bankBranch: '',
+    bankAccountType: 'Current Account',
   });
 
   // --- Calculations ---
