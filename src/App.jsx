@@ -138,7 +138,7 @@ const EditForm = ({ formData, handleChange, financials, setMode }) => (
 
       <div className="flex flex-wrap gap-4">
         <InputField label="Panel Brand" name="panelBrand" value={formData.panelBrand} onChange={handleChange} width="flex-1" />
-        <InputField label="Panel Wattage (Wp)" name="panelWattage" value={formData.panelWattage} onChange={handleChange} type="number" width="w-40" />
+        <InputField label="Panel Wattage (Wp)" name="panelWattage" value={formData.panelWattage} onChange={handleChange} placeholder="e.g. 560-590" width="w-40" />
       </div>
       
       <div className="flex flex-wrap gap-4 mt-2">
@@ -470,7 +470,12 @@ const PrintableQuote = ({ formData, financials, handlePrint, handleDownloadPdf, 
                 <div className="font-bold text-gray-800 text-[11px]">{formData.panelBrand}</div>
                 <div className="text-[10px]">Mono PERC Half-Cut Technology, {formData.panelWattage}Wp+</div>
               </td>
-              <td className="p-2 border text-right font-medium text-gray-800 text-[11px]">{Math.ceil((formData.systemSize * 1000) / formData.panelWattage)} Nos</td>
+              <td className="p-2 border text-right font-medium text-gray-800 text-[11px]">{(() => {
+                const wattage = formData.panelWattage.toString().includes('-') 
+                  ? formData.panelWattage.split('-').map(Number).reduce((a, b) => a + b) / 2 
+                  : Number(formData.panelWattage);
+                return Math.ceil((formData.systemSize * 1000) / wattage);
+              })()} Nos</td>
             </tr>
             <tr className="even:bg-gray-50">
               <td className="p-2 border font-semibold text-gray-700 text-[11px]">Solar Inverter</td>
@@ -680,7 +685,7 @@ const App = () => {
     // Technical Specs
     systemSize: 3, // kW
     panelBrand: 'Waree / Adani / Goldi',
-    panelWattage: 540,
+    panelWattage: '560-590',
     inverterBrand: 'Growatt / Solis / Sofar',
     inverterType: 'On-Grid', // On-Grid, Hybrid, Off-Grid
     structureHeight: 'Standard (Low Height)', // Standard, Elevated
