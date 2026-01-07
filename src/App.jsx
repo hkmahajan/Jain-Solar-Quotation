@@ -76,8 +76,12 @@ const SelectField = ({ label, name, value, onChange, options, width = 'w-full' }
 const Header = ({ formData, showAddress = true }) => (
   <header className="border-b-4 border-orange-500 pb-3 mb-5 flex justify-between items-start">
     <div className="flex items-start gap-3">
-      <div className="bg-orange-500 p-1.5 rounded-lg text-white mt-1">
-         <Sun size={30} fill="white" />
+      <div className="mt-1">
+        <img 
+          src="/logo.png" 
+          alt="Jain Multiservices Logo" 
+          className="w-16 h-16 object-contain"
+        />
       </div>
       <div>
         <h1 className="text-3xl font-extrabold text-orange-600 tracking-tight leading-none">JAIN</h1>
@@ -169,6 +173,7 @@ const EditForm = ({ formData, handleChange, financials, setMode }) => (
       
       <div className="flex flex-wrap gap-4 mt-2">
         <InputField label="Inverter Brand" name="inverterBrand" value={formData.inverterBrand} onChange={handleChange} width="flex-1" />
+        <InputField label="Inverter Capacity (kW)" name="inverterCapacity" value={formData.inverterCapacity} onChange={handleChange} placeholder="e.g. 3" width="w-32" type="number" />
         <SelectField 
           label="Inverter Type" 
           name="inverterType" 
@@ -184,11 +189,39 @@ const EditForm = ({ formData, handleChange, financials, setMode }) => (
     <div className="mb-6 bg-blue-50 p-5 rounded-lg border border-blue-100">
       <h3 className="text-sm font-bold text-blue-800 uppercase tracking-wider mb-4 border-b border-blue-200 pb-2">Pricing (GST Included)</h3>
       
-      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
-        <p className="text-xs text-amber-800 font-medium">
-          ℹ️ Rates are fixed per system capacity and include all taxes (GST). Rates auto-update when you change system size or category.
-        </p>
+      <div className="flex items-center gap-3 mb-4">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            name="useManualCost"
+            checked={formData.useManualCost}
+            onChange={handleChange}
+            className="w-4 h-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+          />
+          <span className="text-sm font-medium text-gray-700">Manual Cost Override</span>
+        </label>
       </div>
+
+      {formData.useManualCost ? (
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">Total Project Cost (₹)</label>
+          <input
+            type="number"
+            name="manualTotalCost"
+            value={formData.manualTotalCost}
+            onChange={handleChange}
+            placeholder="Enter custom amount"
+            className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-lg font-semibold"
+          />
+          <p className="text-xs text-gray-500 mt-1">Enter the total project cost including GST</p>
+        </div>
+      ) : (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+          <p className="text-xs text-amber-800 font-medium">
+            ℹ️ Rates are auto-calculated per system capacity and include all taxes (GST).
+          </p>
+        </div>
+      )}
 
       {/* Live Preview of Cost */}
       <div className="mt-4 bg-white p-4 rounded border border-blue-200">
@@ -460,7 +493,7 @@ const PrintableQuote = ({ formData, financials, handlePrint, handleDownloadPdf, 
             <tr className="even:bg-gray-50">
               <td className="p-2 border font-semibold text-gray-700 text-[11px]">Solar Inverter</td>
               <td className="p-2 border text-gray-600">
-                <div className="font-bold text-gray-800 text-[11px]">{formData.inverterBrand}</div>
+                <div className="font-bold text-gray-800 text-[11px]">{formData.inverterBrand} ({formData.inverterCapacity} kW)</div>
                 <div className="text-[10px]">{formData.inverterType} Type, IP65 Rated, Remote Monitoring WiFi</div>
               </td>
               <td className="p-2 border text-right font-medium text-gray-800 text-[11px]">1 No</td>
@@ -652,11 +685,14 @@ const App = () => {
     panelBrand: 'Waree / Adani / Goldi',
     panelWattage: '560-590',
     inverterBrand: 'Growatt / Solis / Sofar',
+    inverterCapacity: '3',
     inverterType: 'On-Grid', // On-Grid, Hybrid, Off-Grid
     structureHeight: 'Standard (Low Height)', // Standard, Elevated
 
     // Financials - Auto-calculated from tables
     subsidyAmount: 78000, // Auto-set based on capacity
+    useManualCost: false, // Toggle for manual cost override
+    manualTotalCost: '', // Manual cost input
     
     // Bank Details
     bankAccountName: '',
@@ -673,15 +709,28 @@ const App = () => {
     let totalCost = 0;
     let subsidyAmount = 0;
 
-    if (formData.category === 'Commercial') {
-      // Get price from commercial rate table
-      totalCost = COMMERCIAL_RATES[systemSize] || 0;
+    // Use manual cost if enabled and provided
+    if (formData.useManualCost && formData.manualTotalCost) {
+      totalCost = parseFloat(formData.manualTotalCost) || 0;
+      // Still calculate subsidy for residential
+      if (formData.category === 'Residential') {
+        const rateInfo = RESIDENTIAL_RATES[systemSize];
+        if (rateInfo) {
+          subsidyAmount = rateInfo.subsidy;
+        }
+      }
     } else {
-      // Get price and subsidy from residential rate table
-      const rateInfo = RESIDENTIAL_RATES[systemSize];
-      if (rateInfo) {
-        totalCost = rateInfo.price;
-        subsidyAmount = rateInfo.subsidy;
+      // Auto-calculate from rate tables
+      if (formData.category === 'Commercial') {
+        // Get price from commercial rate table
+        totalCost = COMMERCIAL_RATES[systemSize] || 0;
+      } else {
+        // Get price and subsidy from residential rate table
+        const rateInfo = RESIDENTIAL_RATES[systemSize];
+        if (rateInfo) {
+          totalCost = rateInfo.price;
+          subsidyAmount = rateInfo.subsidy;
+        }
       }
     }
 
@@ -830,7 +879,7 @@ const App = () => {
       <nav className="bg-white shadow-sm print:hidden sticky top-0 z-40 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <Sun className="text-orange-500 w-6 h-6" />
+            <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
             <span className="text-lg font-bold text-gray-800 tracking-tight">Jain Multiservice</span>
           </div>
           <div className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">Solar Quotation Generator v3.0</div>
